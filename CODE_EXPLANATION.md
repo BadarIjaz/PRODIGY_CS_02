@@ -23,14 +23,11 @@ def get_integer_key(password):
     return key_int % 256
 ```
 
-Step-by-Step Execution:
-
-hashlib.sha256(...): Converts the password into a secure, fixed-length hexadecimal string.
-
-int(..., 16): Converts that hex string into a massive integer.
-
-% 256: Compresses that massive integer down to a number between 0-255. This acts as our "shift" value for the pixels.
-
+**Step-by-Step Execution:
+**
+**hashlib.sha256(...):** Converts the password into a secure, fixed-length hexadecimal string.
+**int(..., 16):** Converts that hex string into a massive integer.
+**% 256:** Compresses that massive integer down to a number between 0-255. This acts as our "shift" value for the pixels.
 
 ---
 
@@ -43,27 +40,24 @@ img = img.convert("RGB")
 pixels = img.load()
 ```
 
-convert("RGB"): Ensures the image is in 3-channel mode (Red, Green, Blue), handling cases where the input might be Grayscale or CMYK.
-
-pixels = img.load(): Creates a 2D matrix of pixel data that we can modify directly.
+**convert("RGB"):** Ensures the image is in 3-channel mode (Red, Green, Blue), handling cases where the input might be Grayscale or CMYK.
+**pixels = img.load():** Creates a 2D matrix of pixel data that we can modify directly.
 
 ---
 
 ### 3. Encryption Loop (Swap & Math)
 We iterate through the image grid (width x height) and apply two layers of obfuscation.
 
+**STEP 1: Swap Red and Blue channels**
 
-# STEP 1: Swap Red and Blue channels
 r, b = b, r
 
-# STEP 2: Mathematical Encryption
+**STEP 2: Mathematical Encryption**
 pixels[i, j] = ((r + key) % 256, (g + key) % 256, (b + key) % 256)
 Why Swap Channels?
-
 Simply adding a number changes the color, but outlines of objects often remain visible (ghosting). Swapping Red and Blue (R, G, B) -> (B, G, R) disrupts the visual structure significantly.
 
-Why % 256?
-
+**Why % 256?**
 If a pixel value is 250 and the key is 50, the result is 300. This is invalid for a byte. 300 % 256 = 44. This "wraps" the value around, keeping the file valid.
 
 ---
@@ -76,12 +70,10 @@ new_filename = f"{file_name}_encrypted_{clean_ext}.png"
 img.save(new_path, format="PNG")
 ```
 
-Why force PNG?
-
+**Why force PNG?**
 When we modify pixels mathematically, every number must be exact. If we save as .jpg, the compression algorithm will "smooth out" our noise, destroying the data needed for decryption. We force .png (lossless) to preserve data integrity.
 
-Why _{clean_ext}?
-
+**Why _{clean_ext}?**
 We embed the original extension (e.g., jpg) into the filename so we know how to restore it later.
 
 ---
@@ -89,15 +81,13 @@ We embed the original extension (e.g., jpg) into the filename so we know how to 
 ### 5. Decryption (Reverse Logic)
 Decryption must mathematically reverse the encryption steps in the specific order.
 
-
-# STEP 1: Reverse Math
+**# STEP 1: Reverse Math**
 r = (r - key) % 256
 # ... (same for g and b)
 
-# STEP 2: Swap Red and Blue back
+**# STEP 2: Swap Red and Blue back**
 r, b = b, r
-Algorithmic Symmetry:
-
+**Algorithmic Symmetry:**
 Since encryption did Swap -> Add, decryption must do Subtract -> Swap.
 
 ---
@@ -112,9 +102,8 @@ else:
     img.save(restore_path, format="PNG")
 ```
 
-Format Detection: The script parses the filename (e.g., _encrypted_jpg) to find the original format.
-
-Quality Control: If returning to JPEG, we use quality=100 and subsampling=0 to minimize data loss, making the restored image look as close to the original as possible.
+**Format Detection:** The script parses the filename (e.g., _encrypted_jpg) to find the original format.
+**Quality Control:** If returning to JPEG, we use quality=100 and subsampling=0 to minimize data loss, making the restored image look as close to the original as possible.
 
 ---
 
