@@ -10,7 +10,7 @@ This repository contains a simple image encryption tool developed in Python. It 
 4. Enter a secret password (this generates the encryption key).
 
 ### Watch the Demo Video
-[Click to view the demo](pixel_manipulation_demo.mp4)
+[Click to view the demo](https://badarijaz.github.io/PRODIGY_CS_02/pixel_manipulation_demo.mp4)
 
 ### Example
 
